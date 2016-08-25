@@ -21,9 +21,11 @@
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPUpdateServer.h>
 #include <EEPROM.h>
 
 ESP8266WebServer server(80);
+ESP8266HTTPUpdateServer httpUpdater;
 
 //Default SSID and PASSWORD for AP Access Point Mode
 const char* ssid = "OpenEVSE";
@@ -213,7 +215,9 @@ void setup() {
         s += st;
         s += "<p>";
         s += "<form method='get' action='a'><label><b><i>WiFi SSID:</b></i></label><input name='ssid' length=32><p><label><b><i>Password  :</b></i></label><input name='pass' length=64><p><label><b><i>Device Access Key:</b></i></label><input name='ekey' length=32><p><label><b><i>Node:</b></i></label><select name='node'><option value='0'>0 - Default</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option></select><p><label><b><i>Ohm Connect Key - Optional:</b></i></label><input name='ohm' length=64><p><input type='submit'></form>";
-        s += "<a href='/status'>Status </a><a href='/rapi'>RAPI </a>";
+        s += "<a href='/status'>Status </a><a href='/rapi'>RAPI </a><br><br>";
+        s += "<p><b>Firmware Update</b><p>";
+        s += "<iframe style='width:380px; height:50px;' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='/update'></iframe>";
         s += "</html>\r\n\r\n";
     server.send(200, "text/html", s);  
   });
@@ -389,8 +393,10 @@ void setup() {
     s += "</html>\r\n\r\n";
     server.send(200, "text/html", s);
 	 });
-   
+  
+  httpUpdater.setup(&server); 
 	server.begin();
+  httpUpdater.setup(&server);
 	//Serial.println("HTTP server started");
   delay(100);
   Timer = millis();
