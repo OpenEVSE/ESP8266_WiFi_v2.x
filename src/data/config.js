@@ -35,6 +35,9 @@ r1.onreadystatechange = function () {
   if (status.mqtt_server!==0){
     document.getElementById("mqtt_server").value = status.mqtt_server;
     document.getElementById("mqtt_topic").value = status.mqtt_topic;
+    document.getElementById("mqtt_solar").value = solar.mqtt_topic;
+    document.getElementById("mqtt_use").value = use.mqtt_topic;
+
     if (status.mqtt_user!==0){
       document.getElementById("mqtt_user").value = status.mqtt_user;
     }
@@ -326,7 +329,9 @@ document.getElementById("save-mqtt").addEventListener("click", function(e) {
       server: document.getElementById("mqtt_server").value,
       topic: document.getElementById("mqtt_topic").value,
       user: document.getElementById("mqtt_user").value,
-      pass: document.getElementById("mqtt_pass").value
+      pass: document.getElementById("mqtt_pass").value,
+      solar: document.getElementById("mqtt_solar").value,
+      use: document.getElementById("mqtt_use").value
     };
     if (mqtt.server==="") {
       alert("Please enter MQTT server");
@@ -335,7 +340,7 @@ document.getElementById("save-mqtt").addEventListener("click", function(e) {
       var r = new XMLHttpRequest();
       r.open("POST", "savemqtt", true);
       r.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      r.send("&server="+mqtt.server+"&topic="+mqtt.topic+"&user="+mqtt.user+"&pass="+mqtt.pass);
+      r.send("&server="+mqtt.server+"&topic="+mqtt.topic+"&user="+mqtt.user+"&pass="+mqtt.pass+"&solar="+mqtt.solar+"&use="+mqtt.use);
       r.onreadystatechange = function () {
         console.log(mqtt);
         if (r.readyState != 4 || r.status != 200) return;
@@ -347,7 +352,39 @@ document.getElementById("save-mqtt").addEventListener("click", function(e) {
 });
 
 // -----------------------------------------------------------------------
-// Event: Admin save
+// Event: Change mode (solar PV divert)
+// -----------------------------------------------------------------------
+var mode = 0;
+document.getElementById("mode1").addEventListener("click", function(e) {
+    // Eco
+    mode = 1;
+    changemode(mode);
+});
+document.getElementById("mode2").addEventListener("click", function(e) {
+    // Eco+
+    mode = 2;
+    changemode(mode);
+});
+document.getElementById("mode3").addEventListener("click", function(e) {
+    // normal charge
+    mode = 3;
+    changemode(mode);
+});
+
+function changemode(mode){
+   var r = new XMLHttpRequest();
+    r.open("POST", "mode", true);
+    r.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    r.send("&mode="+mode);
+    r.onreadystatechange = function () {
+      console.log(mode);
+      if (r.readyState != 4 || r.status != 200) return;
+      var str = r.responseText;
+      console.log(str);
+    }
+}
+// -----------------------------------------------------------------------
+// Event: Authentication save
 // -----------------------------------------------------------------------
 document.getElementById("save-admin").addEventListener("click", function(e) {
     var admin = {

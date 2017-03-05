@@ -66,7 +66,7 @@
                 </div>
             </div>
          	<div class="box380">
-			<h2>Administration</h2>
+			<h2>Authentication</h2>
 				<p><b>Username:</b><br>
 				<input id="www_user" type="text" value="admin">
 				<p><b>Password:</b><br>
@@ -121,12 +121,11 @@
       		<h2>Solar PV Divert</h2>
           <p>Dynamically adjust charge rate based on solar PV generation.</p>
       	  <span id=small-text><b>Ensure MQTT server config is configured with solar PV gen topic.</b></span><br>
-      		<h2>Charge Mode</h2>
-      		<button id="mode-eco">1:Eco</button>
-      		<button id="mode-eco+">2:Eco+</button>
-      		<button id="mode-normal">3:Normal (default)</button>
-      		<p>Charging mode can be controlled via MQTT:</p>
-      		<span id=small-text>Topic: {base-topic}/mode e.g: '1':Eco, '2':Eco+, '3':Normal</span><br>
+      		<h2>Mode</h2>
+      		<button id="mode1">1:Eco</button>
+      		<button id="mode2">2:Eco+</button>
+      		<button id="mode3">3:Normal (default)</button>
+      		<span id=small-text>Mode can be controlled via MQTT topic: {base-topic}/mode e.g: '1':Eco, '2':Eco+, '3':Normal</span><br>
     		</div>
       
         
@@ -157,7 +156,7 @@
               <input id="mqtt_topic" type="text" value="openevse"><br>
               <span id=small-text>e.g 'openevse'</span>
           		<p><b>SolarPV-gen topic:</b><br>
-          		<input id="mqtt_solarpv" type="text" value="emon/emonpi/power2"><br>
+          		<input id="mqtt_solar" type="text" value="emon/emonpi/power2"><br>
           	  <span id=small-text>Required for solar PV divert, always positive.</span><br>
               <p><b>Onsite-consumption topic:</b><br>
           		<input id="mqtt_use" type="text" value="emon/emonpi/power1"><br>
