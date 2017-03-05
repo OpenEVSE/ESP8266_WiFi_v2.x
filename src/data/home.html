@@ -70,12 +70,15 @@
 				<p><b>Username:</b><br>
 				<input id="www_user" type="text" value="admin">
 				<p><b>Password:</b><br>
-				<input id="www_pass" type="text" value="openevse">
+				<input id="www_pass" type="text" value="openevse"><br>
+        <span id=small-text>Web interface HTTP authentication.</span><br><br>
 				<button id="save-admin">Save</button>
 			</div>
 		
 		<div class="box380">
-			<h2>OpenEVSE WiFi Firmware</h2>
+			<h2>WiFi Firmware</h2>
+      <span id=small-text>ESP8266</span><br>
+
 			<p><b>Version: </b><span id="version"></span></p>
 						<iframe style="width:380px; height:50px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="/update">
 						</iframe>
@@ -88,7 +91,7 @@
 	<div id="content-2">
 	  
 			<div class="box380">
-			<h2>Energy Monitoring</h2>
+			<h2>&nbsp; Energy Monitoring <img src="emoncms.jpg" align=left></h2>
 				<p><b>Emoncms Server*:</b><br>
 				<input id="emoncms_server" type="text" value="emoncms.org">
 				<p></p><span id=small-text>e.g:
@@ -112,7 +115,7 @@
 				<button id="save-emoncms">Save</button>
 				<b>&nbsp; Connected:&nbsp;<span id="emoncms_connected"></span></b><br><br>
 				<span id="psuccess"></span>
-      </div>
+  </div>
         
       <div class="box380">
       		<h2>Solar PV Divert</h2>
@@ -166,7 +169,7 @@
     		</div>
 		
         <div class="box380">
-    			<h2>OhmConnect</h2>
+					<h2>&nbsp; OhmConnect <img src="ohm.jpg" align=left></h2>
     	        <p>OhmConnect monitors real-time conditions on the electricity grid. When dirty and unsustainable power plants turn on, our users receive a notification to save energy.</p>
                 <p><b>Ohm Hour: </b><span id="ohmhour"></span></p>
                 <p><b>Ohm key:</b><br>
@@ -179,6 +182,7 @@
 	</div>
 	
        <div id="content-3">
+
   			<div class="box380">
                   <h2>Current</h2>
                   <table>
@@ -252,6 +256,10 @@
   			<div class="box380">
                <iframe style="width:380px; height:660px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="/rapi">
   			</iframe>
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 			</div>
              <div class="box380">
                <h2>RAPI Get Commands</h2>
