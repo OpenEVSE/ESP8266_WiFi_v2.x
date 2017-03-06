@@ -11,6 +11,7 @@
 #include "mqtt.h"
 #include "input.h"
 #include "emoncms.h"
+#include "divert.h"
 //#include "ota.h"
 
 
@@ -202,6 +203,15 @@ void handleSaveMqtt() {
 
   // If connected disconnect MQTT to trigger re-connect with new details
   mqtt_restart();
+}
+
+// -------------------------------------------------------------------
+// Change mode (solar PV divert mode) e.g 1:eco, 2:eco+, 3:normal (default)
+// url: /mode
+// -------------------------------------------------------------------
+void handleMode(){
+  change_mode(server.arg("mode").toInt());
+  server.send(200, "text/html", "Mode changed");;
 }
 
 // -------------------------------------------------------------------
@@ -478,6 +488,11 @@ void web_server_setup()
   if(www_username!="" && !server.authenticate(www_username.c_str(), www_password.c_str()))
     return server.requestAuthentication();
   handleSaveMqtt();
+  });
+  server.on("/mode", [](){
+  if(www_username!="" && !server.authenticate(www_username.c_str(), www_password.c_str()))
+    return server.requestAuthentication();
+  handleMode();
   });
   server.on("/saveadmin", [](){
   if(www_username!="" && !server.authenticate(www_username.c_str(), www_password.c_str()))

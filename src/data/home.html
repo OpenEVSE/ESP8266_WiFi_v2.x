@@ -66,7 +66,7 @@
                 </div>
             </div>
          	<div class="box380">
-			<h2>Administration</h2>
+			<h2>Authentication</h2>
 				<p><b>Username:</b><br>
 				<input id="www_user" type="text" value="admin">
 				<p><b>Password:</b><br>
@@ -89,10 +89,11 @@
           </div>
     </div>
 	<div id="content-2">
+	  
 			<div class="box380">
 			<h2>&nbsp; Energy Monitoring <img src="emoncms.jpg" align=left></h2>
 				<p><b>Emoncms Server*:</b><br>
-				<input id="emoncms_server" type="text" value="data.openevse.com/emoncms">
+				<input id="emoncms_server" type="text" value="emoncms.org">
 				<p></p><span id=small-text>e.g:
 				<a href="http://data.openevse.com/emoncms">data.openevse.com/emoncms</a>,
 				<a href="http://emoncms.org">emoncms.org</a>,
@@ -114,57 +115,73 @@
 				<button id="save-emoncms">Save</button>
 				<b>&nbsp; Connected:&nbsp;<span id="emoncms_connected"></span></b><br><br>
 				<span id="psuccess"></span>
-
-        </div>
-		<div class="box380">
-		<h2>MQTT</h2>
-		  <p><b>Server*:</b><br>
-          <input id="mqtt_server" type="text">
-          </p><span id=small-text>e.g 'emonpi', 'test.mosquitto.org', '192.168.1.4'</span><br>
-          <p><b>Base-topic*:</b><br>
-          <input id="mqtt_topic" type="text" value="openevse">
-        </p><span id=small-text>e.g 'openevse'</span>
-          <p><b>Username:</b><span> blank - no authentication</span>
-          <input id="mqtt_user" type="text">
-          <p><b>Password:</b><span> blank - no authentication</span>
-          <input id="mqtt_pass" type="text"><br>
-          <button id="save-mqtt">Save</button>
-          <b>&nbsp; Connected:&nbsp;<span id="mqtt_connected"></span></b>
-          
-          <p>Status published to:
-          <span id=small-text>{base-topic}/{staus} value</span><br>
-          <span id=small-text>e.g. openevse/amp 16</span><br>
-          <p>RAPI control subscribes to:
-          <span id=small-text>{base-topic}/rapi/in{command} value</span><br>
-          <span id=small-text>e.g. openevse/rapi/in/$SC 16</span><br>
-          <span id=small-text>e.g. openevse/rapi/in/$GC</span><br>
-          <p>RAPI responce published to:
-          <span id=small-text>{base-topic}/rapi/out responce</span><br>
-          <span id=small-text>e.g. openevse/rapi/out $OK 6 32</span><br>
-          </p>
-          
-          
-
-
-
-		</div>
+  </div>
+        
+      <div class="box380">
+      		<h2>Solar PV Divert</h2>
+          <p>Dynamically adjust charge rate based on solar PV generation.</p>
+      	  <span id=small-text><b>Ensure MQTT server config is configured with solar PV gen topic.</b></span><br>
+      		<h2>Mode</h2>
+      		<button id="mode1">1:Eco</button>
+      		<button id="mode2">2:Eco+</button>
+      		<button id="mode3">3:Normal (default)</button>
+      		<span id=small-text>Mode can be controlled via MQTT topic: {base-topic}/mode e.g: '1':Eco, '2':Eco+, '3':Normal</span><br>
+    		</div>
+      
+        
+    		<div class="box380">
+    		<h2>MQTT</h2>
+              <p>Status published to:
+              <span id=small-text>{base-topic}/{staus} value</span><br>
+              <span id=small-text>e.g. openevse/amp 16</span><br>
+              <p>RAPI control subscribes to:
+              <span id=small-text>{base-topic}/rapi/in{command} value</span><br>
+              <span id=small-text>e.g. openevse/rapi/in/$SC 16</span><br>
+              <span id=small-text>e.g. openevse/rapi/in/$GC</span><br>
+              <p>RAPI responce published to:
+              <span id=small-text>{base-topic}/rapi/out responce</span><br>
+              <span id=small-text>e.g. openevse/rapi/out $OK 6 32</span><br>
+              </p>
+    		  <p><b>Server*:</b><br>
+              <input id="mqtt_server" type="text" value=emonpi><br>
+              <span id=small-text>e.g 'emonpi', 'test.mosquitto.org', '192.168.1.4'. (port: 1883)</span><br>
+              <p><b>Username:</b><br>
+              <input id="mqtt_user" type="text" value=emonpimqtt><br>
+              <span id=small-text>Leave blank for no authentication.</span>
+              <p><b>Password:</b><br>
+              <input id="mqtt_pass" type="text" value=emonpimqtt2016><br>
+              <span id=small-text>Leave blank for no authentication.</span><br>
+          	  <span id=small-text><a href="https://guide.openenergymonitor.org/technical/credentials/">Pre populated with emonPi MQTT server host and authentication.</a></span>
+              <p><b>Base-topic*:</b><br>
+              <input id="mqtt_topic" type="text" value="openevse"><br>
+              <span id=small-text>e.g 'openevse'</span>
+          		<p><b>SolarPV-gen topic:</b><br>
+          		<input id="mqtt_solar" type="text" value="emon/emonpi/power2"><br>
+          	  <span id=small-text>Required for solar PV divert, always positive.</span><br>
+              <p><b>Onsite-consumption topic:</b><br>
+          		<input id="mqtt_use" type="text" value="emon/emonpi/power1"><br>
+          	  <span id=small-text>Required for Solar PV divert Eco+ mode, always positive.</span>
+          	  <p><span id="small-text"><a href="https://guide.openenergymonitor.org/applications/solar-pv/">Pre populated with emonPi solar PV defaults.</a></span></p>
+          	  <br>
+              <button id="save-mqtt">Save</button>
+              <b>&nbsp; Connected:&nbsp;<span id="mqtt_connected"></span></b>
+    		</div>
+		
         <div class="box380">
-			<h2>&nbsp; OhmConnect <img src="ohm.jpg" align=left></h2>
-	        <p>OhmConnect monitors real-time conditions on the electricity grid. When dirty and unsustainable power plants turn on, our users receive a notification to save energy.</p>
-            <p><b>Ohm Hour: </b><span id="ohmhour"></span></p>
-            <p><b>Ohm key:</b><br>
-                <input id="ohmkey" type="text">
-                <button id="save-ohmkey">Save</button>
-				<p>Ohm Key can be obtained by logging in to OhmConnect, enter Settings and locate the link in "Open Source Projects"</p>
-				<p><a href="https://login.ohmconnect.com/verify-ohm-hour/OpnEoVse">See Example</a></p>
-				<b>Key: </b>OpnEoVse
-				
-				
-	    </div>
-			 
-          </div>
+					<h2>&nbsp; OhmConnect <img src="ohm.jpg" align=left></h2>
+    	        <p>OhmConnect monitors real-time conditions on the electricity grid. When dirty and unsustainable power plants turn on, our users receive a notification to save energy.</p>
+                <p><b>Ohm Hour: </b><span id="ohmhour"></span></p>
+                <p><b>Ohm key:</b><br>
+                    <input id="ohmkey" type="text">
+                    <button id="save-ohmkey">Save</button>
+    				<p>Ohm Key can be obtained by logging in to OhmConnect, enter Settings and locate the link in "Open Source Projects"</p>
+    				<p><a href="https://login.ohmconnect.com/verify-ohm-hour/OpnEoVse">See Example</a></p>
+    				<b>Key: </b>OpnEoVse
+	     </div>
+	</div>
+	
        <div id="content-3">
-         
+
   			<div class="box380">
                   <h2>Current</h2>
                   <table>
@@ -238,7 +255,6 @@
   			<div class="box380">
                <iframe style="width:380px; height:660px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="/rapi">
   			</iframe>
-
 			</div>
              <div class="box380">
                <h2>RAPI Get Commands</h2>
