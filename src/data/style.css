@@ -74,8 +74,10 @@ h3 {
 }
     
 .box380 {
+  position: relative;
   width: 380px;
-  float: left;
+  display: inline-block;
+  vertical-align: top;
   padding: 20px;
   margin: 20px 20px 20px 20px;
   border: 1px solid #ddd;
@@ -204,14 +206,9 @@ input[type="password"] {
 	/* padding: 14px; */
   position: absolute;
 	z-index: -100;
-	
 	/*
 	transition: all linear 0.1s;
 	*/
-}
-
-#content-1 {
-  margin: 0 auto;
 }
 
 #content-1 div {
@@ -308,6 +305,5 @@ input[type="password"] {
     margin: 20px auto;
     padding: 10px;
     width: 284px;
-    float: none;
   }
 }
