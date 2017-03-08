@@ -355,20 +355,32 @@ document.getElementById("save-mqtt").addEventListener("click", function(e) {
 // Event: Change mode (solar PV divert)
 // -----------------------------------------------------------------------
 var mode = 0;
+
 document.getElementById("mode1").addEventListener("click", function(e) {
     // Eco
     mode = 1;
     changemode(mode);
+    document.getElementById("mode1").style.backgroundColor = 'black';
+    document.getElementById("mode2").style.backgroundColor = '#008080';
+    document.getElementById("mode3").style.backgroundColor = '#008080';
 });
+
 document.getElementById("mode2").addEventListener("click", function(e) {
     // Eco+
     mode = 2;
     changemode(mode);
+    document.getElementById("mode2").style.backgroundColor = 'black';
+    document.getElementById("mode1").style.backgroundColor = '#008080';
+    document.getElementById("mode3").style.backgroundColor = '#008080';
 });
+
 document.getElementById("mode3").addEventListener("click", function(e) {
     // normal charge
     mode = 3;
     changemode(mode);
+    document.getElementById("mode3").style.backgroundColor = 'black';
+    document.getElementById("mode1").style.backgroundColor = '#008080';
+    document.getElementById("mode2").style.backgroundColor = '#008080';
 });
 
 function changemode(mode){
