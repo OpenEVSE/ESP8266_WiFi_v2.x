@@ -398,7 +398,7 @@ document.getElementById("save-admin").addEventListener("click", function(e) {
       $.post(baseEndpoint + "/divertmode", { divertmode: divertmode }, function (data) {
         self.changeDivertModeSuccess(true);
       }).fail(function () {
-        alert("Failed to set divert mode");
+        alert("Failed to save Ohm key config");
       }).always(function () {
         self.changeDivertModeFetching(false);
       });
