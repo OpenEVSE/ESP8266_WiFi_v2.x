@@ -385,6 +385,23 @@ document.getElementById("save-admin").addEventListener("click", function(e) {
     var admin = {
       user: document.getElementById("www_user").value,
       pass: document.getElementById("www_pass").value
+  // -----------------------------------------------------------------------
+  // Event: Change divertmode (solar PV divert)
+  // -----------------------------------------------------------------------
+  self.changeDivertModeFetching = ko.observable(false);
+  self.changeDivertModeSuccess = ko.observable(false);
+  self.changeDivertMode = function(divertmode) {
+    if(0 !== divertmode) {
+      self.config.divertmode(divertmode);
+      self.changeDivertModeFetching(true);
+      self.changeDivertModeSuccess(false);
+      $.post(baseEndpoint + "/divertmode", { divertmode: divertmode }, function (data) {
+        self.changeDivertModeSuccess(true);
+      }).fail(function () {
+        alert("Failed to set divert mode");
+      }).always(function () {
+        self.changeDivertModeFetching(false);
+      });
     }
     document.getElementById("save-admin").innerHTML = "Saving...";
     var r = new XMLHttpRequest();
