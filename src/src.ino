@@ -67,6 +67,14 @@ setup() {
   // Start local OTA update server
   ArduinoOTA.setHostname(esp_hostname);
   ArduinoOTA.begin();
+#ifdef WIFI_LED
+  ArduinoOTA.onProgress([](unsigned int pos, unsigned int size) {
+    DBUGF("Upgrade %d/%d", pos, size);
+    static int state = LOW;
+    state = !state;
+    digitalWrite(WIFI_LED, state);
+  });
+#endif
 #endif
 } // end setup
 
@@ -75,6 +83,7 @@ setup() {
 // -------------------------------------------------------------------
 void
 loop() {
+  unsigned long loopStart = millis();
 
   web_server_loop();
   wifi_loop();
@@ -124,4 +133,9 @@ loop() {
     }
 
   } // end WiFi connected
+
+  unsigned long loopTime = millis() - loopStart;
+  if(loopTime > 10) {
+    DBUGF("Slow loop %dms", loopTime);
+  }
 } // end loop
