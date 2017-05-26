@@ -10,7 +10,6 @@
 #include "input.h"
 #include "emoncms.h"
 #include "divert.h"
-#include "debug.h"
 
 AsyncWebServer server(80);          //Create class for Web server
 
@@ -209,6 +208,7 @@ handleSaveMqtt(AsyncWebServerRequest *request) {
   response->print(tmpStr);
   request->send(response);
 
+  // If connected disconnect MQTT to trigger re-connect with new details
   mqttRestartTime = millis();
 }
 
