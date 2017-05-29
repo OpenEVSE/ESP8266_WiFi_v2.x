@@ -15,9 +15,6 @@ const char *softAP_password = "openevse";
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);
 
-// hostname for mDNS. Should work at least on windows. Try http://openevse or http://openevse.local
-const char *esp_hostname = "openevse";
-
 // Wifi Network Strings
 String connected_network = "";
 String status_string = "";
@@ -25,6 +22,13 @@ String ipaddress = "";
 
 unsigned long Timer;
 String st, rssi;
+
+#ifndef WIFI_HOSTNAME
+#define WIFI_HOSTNAME openevse
+#endif
+
+// hostname for mDNS. Should work at least on windows. Try http://openevse or http://openevse.local
+const char *esp_hostname = ESCAPEQUOTE(WIFI_HOSTNAME);
 
 #ifdef WIFI_LED
 #ifndef WIFI_LED_ON_STATE
@@ -41,7 +45,7 @@ String st, rssi;
 
 int wifiLedState = !WIFI_LED_ON_STATE;
 unsigned long wifiLedTimeOut = millis();
-#endif
+#endif // WIFI_LED
 
 // -------------------------------------------------------------------
 int wifi_mode = WIFI_MODE_STA;
@@ -103,7 +107,7 @@ startAP() {
   delay(100);
   // Clear serial input buffer for RAPI packet accounting
   while (Serial.available())
-    Serial.read(); 
+    Serial.read();
 }
 
 // -------------------------------------------------------------------
@@ -115,7 +119,7 @@ startClient() {
   DEBUG.println(esid.c_str());
   // DEBUG.print(" epass:");
   // DEBUG.println(epass.c_str());
-  WiFi.hostname("openevse");
+  WiFi.hostname(esp_hostname);
   WiFi.begin(esid.c_str(), epass.c_str());
 
   delay(50);
@@ -177,7 +181,7 @@ startClient() {
     delay(100);
     // Clear serial input buffer for RAPI packet accounting
     while (Serial.available())
-      Serial.read(); 
+      Serial.read();
   }
 }
 

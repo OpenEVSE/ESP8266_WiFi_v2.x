@@ -16,4 +16,7 @@
 
 #include "debug.h"
 
+#define TEXTIFY(A) #A
+#define ESCAPEQUOTE(A) TEXTIFY(A)
+
 #endif // _EMONESP_H

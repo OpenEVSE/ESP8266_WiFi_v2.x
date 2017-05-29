@@ -4,9 +4,6 @@
 //#define DEBUG
 //#define DEBUG_PORT Serial
 
-#define TEXTIFY(A) #A
-#define ESCAPEQUOTE(A) TEXTIFY(A)
-
 #ifdef ENABLE_DEBUG
 
 #ifndef DEBUG_PORT
