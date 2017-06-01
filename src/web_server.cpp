@@ -22,8 +22,6 @@ unsigned long systemRestartTime = 0;
 unsigned long systemRebootTime = 0;
 
 // Get running firmware version from build tag environment variable
-#define TEXTIFY(A) #A
-#define ESCAPEQUOTE(A) TEXTIFY(A)
 String currentfirmware = ESCAPEQUOTE(BUILD_TAG);
 
 // -------------------------------------------------------------------
@@ -32,7 +30,7 @@ String currentfirmware = ESCAPEQUOTE(BUILD_TAG);
 bool requestPreProcess(AsyncWebServerRequest *request, AsyncResponseStream *&response, const char *contentType = "application/json")
 {
   if(www_username!="" && !request->authenticate(www_username.c_str(), www_password.c_str())) {
-    request->requestAuthentication();
+    request->requestAuthentication(esp_hostname);
     return false;
 }
 
@@ -54,7 +52,7 @@ handleHome(AsyncWebServerRequest *request) {
       && !request->authenticate(www_username.c_str(),
                               www_password.c_str())
       && wifi_mode == WIFI_MODE_STA) {
-    return request->requestAuthentication();
+    return request->requestAuthentication(esp_hostname);
   }
 
   if (SPIFFS.exists("/home.htm")) {

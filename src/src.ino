@@ -57,7 +57,9 @@ setup() {
 #endif
 
   DEBUG.println();
-  DEBUG.print("OpenEVSE WiFI ");
+  DEBUG.print("OpenEVSE WiFi ");
+  DEBUG.print(esp_hostname);
+  DEBUG.print(" ");
   DEBUG.println(ESP.getChipId());
   DEBUG.println("Firmware: " + currentfirmware);
 
