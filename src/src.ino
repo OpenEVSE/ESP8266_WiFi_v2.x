@@ -35,11 +35,18 @@
 #include "input.h"
 #include "emoncms.h"
 #include "mqtt.h"
+#include "divert.h"
+#include "ota.h"
+
+#include "RapiSender.h"
+
+RapiSender rapiSender(&Serial);
 
 unsigned long Timer1; // Timer for events once every 30 seconds
 unsigned long Timer2; // Timer for events once every 1 Minute
-unsigned long Timer3; // Timer for events once every 5 seconds
+unsigned long Timer3; // Timer for events once every 2 seconds
 
+boolean rapi_read = 0; //flag to indicate first read of RAPI status
 // -------------------------------------------------------------------
 // SETUP
 // -------------------------------------------------------------------
@@ -48,28 +55,46 @@ setup() {
   delay(2000);
   Serial.begin(115200);
   pinMode(0, INPUT);
-  espflash = ESP.getFlashChipSize();
-  espfree = ESP.getFreeHeap();
 
-#ifdef DEBUG_SERIAL1
-  Serial1.begin(115200);
-#endif
+  DEBUG_BEGIN(115200);
 
-  DEBUG.println();
-  DEBUG.print("OpenEVSE WiFI ");
-  DEBUG.println(ESP.getChipId());
-  DEBUG.println("Firmware: " + currentfirmware);
+  DBUGLN();
+  DBUG("OpenEVSE WiFI ");
+  DBUGLN(ESP.getChipId());
+  DBUGLN("Firmware: " + currentfirmware);
 
+  DBUGF("Free: %d", ESP.getFreeHeap());
+
+  // Read saved settings from the config
   config_load_settings();
+  DBUGF("After config_load_settings: %d", ESP.getFreeHeap());
+
+  // Initialise the WiFi
   wifi_setup();
+  DBUGF("After wifi_setup: %d", ESP.getFreeHeap());
+
+  // Bring up the web server
   web_server_setup();
-  delay(5000); //gives OpenEVSE time to finish self test on cold start
-  handleRapiRead(); //Read all RAPI values
+  DBUGF("After web_server_setup: %d", ESP.getFreeHeap());
+
 #ifdef ENABLE_OTA
-  // Start local OTA update server
-  ArduinoOTA.setHostname(esp_hostname);
-  ArduinoOTA.begin();
+  ota_setup();
+  DBUGF("After ota_setup: %d", ESP.getFreeHeap());
 #endif
+  rapiSender.setOnEvent([]() {
+    if(!strcmp(rapiSender.getToken(0), "$ST")) {
+      String qrapi = rapiSender.getToken(1);
+      DBUGVAR(qrapi);
+      state = strtol(qrapi.c_str(), NULL, 16);
+      DBUGVAR(state);
+    } else if(!strcmp(rapiSender.getToken(0), "$WF")) {
+      String qrapi = rapiSender.getToken(1);
+      DBUGVAR(qrapi);
+      long wifiMode = strtol(qrapi.c_str(), NULL, 10);
+      DBUGVAR(wifiMode);
+    }
+  });
+  rapiSender.enableSequenceId(0);
 } // end setup
 
 // -------------------------------------------------------------------
@@ -77,42 +102,63 @@ setup() {
 // -------------------------------------------------------------------
 void
 loop() {
-  // ota_loop();
+  Profile_Start(loop);
+
   web_server_loop();
   wifi_loop();
-
 #ifdef ENABLE_OTA
-  ArduinoOTA.handle();
+  ota_loop();
 #endif
 
-  if (mqtt_server != 0)
-    mqtt_loop();
+  // Gives OpenEVSE time to finish self test on cold start
+  if ( (millis() > 5000) && (rapi_read==0) ) {
+    DBUGLN("first read RAPI values");
+    handleRapiRead(); //Read all RAPI values
+    rapi_read=1;
+  }
+  // -------------------------------------------------------------------
+  // Do these things once every 2s
+  // -------------------------------------------------------------------
+  if ((millis() - Timer3) >= 2000) {
+    DBUGF("Free: %d", ESP.getFreeHeap());
+    update_rapi_values();
+    Timer3 = millis();
+  }
 
-  if (wifi_mode == WIFI_MODE_STA || wifi_mode == WIFI_MODE_AP_AND_STA) {
-// -------------------------------------------------------------------
-// Do these things once every 5s
-// -------------------------------------------------------------------
-    if ((millis() - Timer3) >= 5000) {
-      update_rapi_values();
-      Timer3 = millis();
+  if (wifi_mode==WIFI_MODE_STA || wifi_mode==WIFI_MODE_AP_AND_STA) {
+
+    if (config_mqtt_enabled()) {
+      mqtt_loop();
     }
-// -------------------------------------------------------------------
-// Do these things once every Minute
-// -------------------------------------------------------------------
+
+    // -------------------------------------------------------------------
+    // Do these things once every Minute
+    // -------------------------------------------------------------------
     if ((millis() - Timer2) >= 60000) {
-      ohm_loop();
+      DBUGLN("Time2");
+      if(config_ohm_enabled()) {
+        ohm_loop();
+      }
+      divert_current_loop();
       Timer2 = millis();
     }
-// -------------------------------------------------------------------
-// Do these things once every 30 seconds
-// -------------------------------------------------------------------
+    // -------------------------------------------------------------------
+    // Do these things once every 30 seconds
+    // -------------------------------------------------------------------
     if ((millis() - Timer1) >= 30000) {
+      DBUGLN("Time1");
+
       create_rapi_json(); // create JSON Strings for EmonCMS and MQTT
-      if (emoncms_apikey != 0)
+      if (config_emoncms_enabled()) {
         emoncms_publish(url);
-      Timer1 = millis();
-      if (mqtt_server != 0)
+      }
+      if (config_mqtt_enabled()) {
         mqtt_publish(data);
+      }
+      Timer1 = millis();
     }
+
   } // end WiFi connected
+
+  Profile_End(loop, 10);
 } // end loop

@@ -57,3 +57,8 @@ $RECYCLE.BIN/
 .clang_complete
 .gcc-flags.json
 .vscode
+.vscode/browse.vc.db*
+
+full-upload.sh
+*.gch
+.vscode/browse.vc.db*
