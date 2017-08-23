@@ -1,5 +1,8 @@
 # OpenEVSE WiFi
 
+[![Build Status](https://travis-ci.org/jeremypoulter/ESP8266_WiFi_v2.x.svg?branch=master)](https://travis-ci.org/jeremypoulter/ESP8266_WiFi_v2.x)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/640ec33a27b24f6fb4fb1d7e74c7334c)](https://www.codacy.com/app/jeremy_poulter/ESP8266_WiFi_v2.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jeremypoulter/ESP8266_WiFi_v2.x&amp;utm_campaign=Badge_Grade)
+
 OpenEVSE ESP8266 WIFI serial to EmonCMS link
 
 ![OpenEVSE_WiFi.jpg](docs/OpenEVSE_WiFi.png)
@@ -16,7 +19,7 @@ OpenEVSE ESP8266 WIFI serial to EmonCMS link
 
 ## WiFi Setup
 
-On first boot, OpenEVSE should broadcast a WiFI AP `OpenEVSE_XXX`. Connect to this AP (default password: `openevse`) and the [captive portal](https://en.wikipedia.org/wiki/Captive_portal) should forward you to the log-in page. If this does not happen navigate to `http://192.168.4.1`
+On first boot, OpenEVSE should broadcast a WiFI AP `OpenEVSE_XXX`. Connect to this AP (default password: `openevse`) and the [captive portal](https://en.wikipedia.org/wiki/Captive_portal) should forward you to the log-in page. If this does not happen navigate to `http://openevse` or `http://192.168.4.1`
 
 *Note: You may need to disable mobile data if connecting via a Android 6 device*
 
@@ -80,7 +83,7 @@ e.g assuming base-topic of `openevse` to following command will set current to 1
 
 `openevse/rapi/in/$SC 13`
 
-The payload can be left blankc if the RAPI command does not require a payload e.g.
+The payload can be left blank if the RAPI command does not require a payload e.g.
 
 `openevse/rapi/in/$GC`
 
