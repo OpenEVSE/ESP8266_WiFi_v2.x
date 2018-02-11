@@ -16,7 +16,7 @@ function OpenEvseWiFiViewModel(baseHost, basePort)
     return endpoint;
   });
   self.wsEndpoint = ko.pureComputed(function () {
-    var endpoint = "ws://" + self.baseHost();
+    var endpoint = "wss://" + self.baseHost();
     if(80 !== self.basePort()) {
       endpoint += ":"+self.basePort();
     }
