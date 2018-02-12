@@ -14,7 +14,7 @@
     "wifi_portal.js"
   ],
   "lib.js": [
-    "lib/jquery-3.2.1.js",
+    "lib/jquery-3.3.1.min.js",
     "lib/knockout-3.4.2.js",
     "lib/knockout.mapping-2.4.1.js",
     "view_models/BaseViewModel.js",
