@@ -1,13 +1,15 @@
 /* global $, ko, ConfigViewModel, StatusViewModel, RapiViewModel, WiFiScanViewModel, WiFiConfigViewModel, OpenEvseViewModel */
 /* exported OpenEvseWiFiViewModel */
 
-function OpenEvseWiFiViewModel(baseHost, basePort)
+function OpenEvseWiFiViewModel(baseHost, basePort, baseProtocol)
 {
   "use strict";
   var self = this;
 
   self.baseHost = ko.observable("" !== baseHost ? baseHost : "openevse.local");
   self.basePort = ko.observable(basePort);
+  self.baseProtocol = ko.observable(baseProtocol)
+
   self.baseEndpoint = ko.pureComputed(function () {
     var endpoint = "//" + self.baseHost();
     if(80 !== self.basePort()) {
@@ -16,7 +18,11 @@ function OpenEvseWiFiViewModel(baseHost, basePort)
     return endpoint;
   });
   self.wsEndpoint = ko.pureComputed(function () {
-    var endpoint = "wss://" + self.baseHost();
+    if("https" === self.baseProtocol){
+      var endpoint = "wss://" + self.baseHost();
+    } else {
+      var endpoint = "ws://" + self.baseHost();
+    }
     if(80 !== self.basePort()) {
       endpoint += ":"+self.basePort();
     }
@@ -100,7 +106,7 @@ function OpenEvseWiFiViewModel(baseHost, basePort)
             // Redirect to the IP internally
             self.baseHost(self.status.ipaddress());
           } else {
-            window.location.replace("http://" + self.status.ipaddress() + ":" + self.basePort());
+            window.location.replace(self.baseProtocol() + self.status.ipaddress() + ":" + self.basePort());
           }
         }
         self.openevse.update(function () {
