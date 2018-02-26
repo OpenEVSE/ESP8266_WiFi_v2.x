@@ -8,7 +8,7 @@ function OpenEvseWiFiViewModel(baseHost, basePort, baseProtocol)
 
   self.baseHost = ko.observable("" !== baseHost ? baseHost : "openevse.local");
   self.basePort = ko.observable(basePort);
-  self.baseProtocol = ko.observable(baseProtocol)
+  self.baseProtocol = ko.observable(baseProtocol);
 
   self.baseEndpoint = ko.pureComputed(function () {
     var endpoint = "//" + self.baseHost();
