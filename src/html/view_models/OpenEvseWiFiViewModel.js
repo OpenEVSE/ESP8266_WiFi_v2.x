@@ -17,11 +17,11 @@ function OpenEvseWiFiViewModel(baseHost, basePort, baseProtocol)
     }
     return endpoint;
   });
+  
   self.wsEndpoint = ko.pureComputed(function () {
+    var endpoint = "ws://" + self.baseHost();
     if("https:" === self.baseProtocol()){
-      var endpoint = "wss://" + self.baseHost();
-    } else {
-      var endpoint = "ws://" + self.baseHost();
+      endpoint = "wss://" + self.baseHost();
     }
     if(80 !== self.basePort()) {
       endpoint += ":"+self.basePort();
