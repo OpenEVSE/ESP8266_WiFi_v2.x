@@ -18,7 +18,7 @@ function OpenEvseWiFiViewModel(baseHost, basePort, baseProtocol)
     return endpoint;
   });
   self.wsEndpoint = ko.pureComputed(function () {
-    if("https" === self.baseProtocol){
+    if("https:" === self.baseProtocol()){
       var endpoint = "wss://" + self.baseHost();
     } else {
       var endpoint = "ws://" + self.baseHost();
@@ -106,7 +106,7 @@ function OpenEvseWiFiViewModel(baseHost, basePort, baseProtocol)
             // Redirect to the IP internally
             self.baseHost(self.status.ipaddress());
           } else {
-            window.location.replace(self.baseProtocol() + self.status.ipaddress() + ":" + self.basePort());
+            window.location.replace("http://" + self.status.ipaddress() + ":" + self.basePort());
           }
         }
         self.openevse.update(function () {
