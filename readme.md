@@ -258,13 +258,17 @@ There is also an [OpenEVSE RAPI command python library](https://github.com/tiram
 ### OhmConnect
 
 **USA California only**
+[Join here](https://ohm.co/openevse)
 
-*NOT CURRENTLY ACTIVE*
+**Video - How does it Work**
+https://player.vimeo.com/video/119419875
 
-~~Uses [OhmConnect API](https://www.ohmconnect.com/) to pause charging during a 'ohm-hour' (period of high grid demand)~~
+-Sign Up
+-Enter Ohm Key
 
-***
-
+Ohm Key can be obtained by logging in to OhmConnect, enter Settings and locate the link in "Open Source Projects"
+Example: https://login.ohmconnect.com/verify-ohm-hour/OpnEoVse
+Key: OpnEoVse
 ## System
 
 ![system](docs/system.png)
