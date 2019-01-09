@@ -62,11 +62,15 @@ h2 {
   padding-bottom: 0.2em;
   border-bottom: 1px solid #eee;
   margin-top: 2px;
+  line-height: 47px;
   overflow:hidden;
 }
 
 h2 img{
   width:100%;
+}
+h2 img.small{
+  width:auto;
 }
 
 .header h3 {
