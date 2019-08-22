@@ -55,6 +55,13 @@ void mqttmsg_callback(char *topic, byte * payload, unsigned int length) {
       divertmode_update(newdivert);
     }
   }
+  // If MQTT message to request data received
+  else if (topic_string == mqtt_topic + "/in"){
+    DBUGLN("MQTT config request received");
+    String mqtt_data = "config data";
+    String mqtt_sub_topic = mqtt_topic + "/config";
+    mqttclient.publish(mqtt_sub_topic.c_str(), mqtt_data.c_str());
+    }
   else
   {
     // If MQTT message is RAPI command
@@ -112,6 +119,8 @@ mqtt_connect() {
       mqttclient.subscribe(mqtt_grid_ie.c_str());
     }
     mqtt_sub_topic = mqtt_topic + "/divertmode/set";      // MQTT Topic to change divert mode
+    mqttclient.subscribe(mqtt_sub_topic.c_str());
+    mqtt_sub_topic = mqtt_topic + "/in";                  // MQTT Topic to accpet incoming requests
     mqttclient.subscribe(mqtt_sub_topic.c_str());
 
   } else {
