@@ -894,7 +894,7 @@ void handleNotFound(AsyncWebServerRequest *request)
 
     String s = F("<html><body><a href=\"");
     s += url;
-    s += F("\">OpenEVES</a></body></html>");
+    s += F("\">OpenEVSE</a></body></html>");
 
     response->setCode(301);
     response->addHeader(F("Location"), url);
