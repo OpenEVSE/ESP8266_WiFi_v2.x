@@ -185,7 +185,7 @@ mqtt_loop() {
   if (!mqttclient.connected()) {
     long now = millis();
     // try and reconnect continuously for first 5s then try again once every 10s
-    if ((now < 50000) || ((now - lastMqttReconnectAttempt) > 100000)) {
+    if ((now < 5000) || ((now - lastMqttReconnectAttempt) > 10000)) {
       lastMqttReconnectAttempt = now;
       if (mqtt_connect()) { // Attempt to reconnect
         lastMqttReconnectAttempt = 0;
