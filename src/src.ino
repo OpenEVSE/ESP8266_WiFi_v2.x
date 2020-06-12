@@ -28,7 +28,7 @@
 #include <ArduinoOTA.h>               // local OTA update from Arduino IDE
 
 #include "emonesp.h"
-#include "config.h"
+#include "app_config.h"
 #include "wifi.h"
 #include "web_server.h"
 #include "ohm.h"
@@ -39,52 +39,53 @@
 #include "divert.h"
 #include "ota.h"
 #include "lcd.h"
+#include "espal.h"
+#include "event.h"
 
 #include "RapiSender.h"
 
-RapiSender rapiSender(&Serial);
+RapiSender rapiSender(&RAPI_PORT);
 
 unsigned long Timer1; // Timer for events once every 30 seconds
 unsigned long Timer3; // Timer for events once every 2 seconds
 
 boolean rapi_read = 0; //flag to indicate first read of RAPI status
 
+static void hardware_setup();
+
 // -------------------------------------------------------------------
 // SETUP
 // -------------------------------------------------------------------
-void setup() {
-  delay(2000);
-  Serial.begin(115200);
-  pinMode(0, INPUT);
-
-  DEBUG_BEGIN(115200);
+void setup()
+{
+  hardware_setup();
+  ESPAL.begin();
 
   DEBUG.println();
-  DEBUG.print("OpenEVSE WiFI ");
-  DEBUG.println(ESP.getChipId());
-  DEBUG.println("Firmware: " + currentfirmware);
-
-  DEBUG.printf("Free: %d\n", ESP.getFreeHeap());
+  DEBUG.printf("OpenEVSE WiFI %s\n", ESPAL.getShortId().c_str());
+  DEBUG.printf("Firmware: %s\n", currentfirmware.c_str());
+  DEBUG.printf("IDF version: %s\n", ESP.getSdkVersion());
+  DEBUG.printf("Free: %d\n", ESPAL.getFreeHeap());
 
   // Read saved settings from the config
   config_load_settings();
-  DBUGF("After config_load_settings: %d", ESP.getFreeHeap());
+  DBUGF("After config_load_settings: %d", ESPAL.getFreeHeap());
 
   // Initialise the WiFi
   wifi_setup();
-  DBUGF("After wifi_setup: %d", ESP.getFreeHeap());
+  DBUGF("After wifi_setup: %d", ESPAL.getFreeHeap());
 
   // Bring up the web server
   web_server_setup();
-  DBUGF("After web_server_setup: %d", ESP.getFreeHeap());
+  DBUGF("After web_server_setup: %d", ESPAL.getFreeHeap());
 
 #ifdef ENABLE_OTA
   ota_setup();
-  DBUGF("After ota_setup: %d", ESP.getFreeHeap());
+  DBUGF("After ota_setup: %d", ESPAL.getFreeHeap());
 #endif
 
-  rapiSender.setOnEvent(on_rapi_event);
-  rapiSender.enableSequenceId(0);
+  input_setup();
+
 } // end setup
 
 // -------------------------------------------------------------------
@@ -103,28 +104,31 @@ loop() {
   rapiSender.loop();
   divert_current_loop();
 
-  if(OPENEVSE_STATE_STARTING != state &&
-     OPENEVSE_STATE_INVALID != state)
+  if(OpenEVSE.isConnected())
   {
-    // Read initial state from OpenEVSE
-    if (rapi_read == 0)
+    if(OPENEVSE_STATE_STARTING != state &&
+      OPENEVSE_STATE_INVALID != state)
     {
-      lcd_display(F("OpenEVSE WiFI"), 0, 0, 0, LCD_CLEAR_LINE);
-      lcd_display(currentfirmware, 0, 1, 5 * 1000, LCD_CLEAR_LINE);
-      lcd_loop();
+      // Read initial state from OpenEVSE
+      if (rapi_read == 0)
+      {
+        lcd_display(F("OpenEVSE WiFI"), 0, 0, 0, LCD_CLEAR_LINE);
+        lcd_display(currentfirmware, 0, 1, 5 * 1000, LCD_CLEAR_LINE);
+        lcd_loop();
 
-      DBUGLN("first read RAPI values");
-      handleRapiRead(); //Read all RAPI values
-      rapi_read=1;
-    }
+        DBUGLN("first read RAPI values");
+        handleRapiRead(); //Read all RAPI values
+        rapi_read=1;
+      }
 
-    // -------------------------------------------------------------------
-    // Do these things once every 2s
-    // -------------------------------------------------------------------
-    if ((millis() - Timer3) >= 2000) {
-      DEBUG.printf("Free: %d\n", ESP.getFreeHeap());
-      update_rapi_values();
-      Timer3 = millis();
+      // -------------------------------------------------------------------
+      // Do these things once every 2s
+      // -------------------------------------------------------------------
+      if ((millis() - Timer3) >= 2000) {
+        DEBUG.printf("Free: %d\n", ESPAL.getFreeHeap());
+        update_rapi_values();
+        Timer3 = millis();
+      }
     }
   }
   else
@@ -133,26 +137,24 @@ loop() {
     if ((millis() - Timer3) >= 1000)
     {
       // Check state the OpenEVSE is in.
-      if (0 == rapiSender.sendCmd("$GS"))
+      OpenEVSE.begin(rapiSender, [](bool connected)
       {
-        if(rapiSender.getTokenCnt() >= 3)
+        if(connected)
         {
-          const char *val = rapiSender.getToken(1);
-          DBUGVAR(val);
-          state = strtol(val, NULL, 10);
-          DBUGVAR(state);
+          OpenEVSE.getStatus([](int ret, uint8_t evse_state, uint32_t session_time, uint8_t pilot_state, uint32_t vflags) {
+            state = evse_state;
+          });
+        } else {
+          DBUGLN("OpenEVSE not responding or not connected");
         }
-      } else {
-        DBUGLN("OpenEVSE not responding or not connected");
-      }
+      });
+      Timer3 = millis();
     }
   }
 
   if(wifi_client_connected())
   {
-    if (config_mqtt_enabled()) {
-      mqtt_loop();
-    }
+    mqtt_loop();
 
     // -------------------------------------------------------------------
     // Do these things once every 30 seconds
@@ -160,17 +162,28 @@ loop() {
     if ((millis() - Timer1) >= 30000) {
       DBUGLN("Time1");
 
-      create_rapi_json(); // create JSON Strings for EmonCMS and MQTT
-      if (config_emoncms_enabled()) {
-        emoncms_publish(url);
+      if(!Update.isRunning())
+      {
+        DynamicJsonDocument data(4096);
+        create_rapi_json(data); // create JSON Strings for EmonCMS and MQTT
+        emoncms_publish(data);
+        event_send(data);
+
+        if(config_ohm_enabled()) {
+          ohm_loop();
+        }
       }
-      if (config_mqtt_enabled()) {
-        mqtt_publish(data);
-      }
-      if(config_ohm_enabled()) {
-        ohm_loop();
-      }
+
       Timer1 = millis();
+    }
+
+    if(emoncms_updated)
+    {
+      // Send the current state to check the config
+      DynamicJsonDocument data(4096);
+      create_rapi_json(data);
+      emoncms_publish(data);
+      emoncms_updated = false;
     }
   } // end WiFi connected
 
@@ -178,11 +191,29 @@ loop() {
 } // end loop
 
 
-void event_send(String event)
+void event_send(String &json)
 {
-  web_server_event(event);
+  StaticJsonDocument<512> event;
+  deserializeJson(event, json);
+  event_send(event);
+}
 
-  if (config_mqtt_enabled()) {
-    mqtt_publish(event);
-  }
+void event_send(JsonDocument &event)
+{
+  #ifdef ENABLE_DEBUG
+  serializeJson(event, DEBUG_PORT);
+  DBUGLN("");
+  #endif
+  web_server_event(event);
+  mqtt_publish(event);
+}
+
+void hardware_setup()
+{
+  Serial.begin(115200);
+  DEBUG_BEGIN(115200);
+
+  pinMode(0, INPUT);
+
+
 }

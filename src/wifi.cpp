@@ -1,6 +1,6 @@
 #include "emonesp.h"
 #include "wifi.h"
-#include "config.h"
+#include "app_config.h"
 #include "lcd.h"
 
 #include <ESP8266WiFi.h>              // Connect to Wifi

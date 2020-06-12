@@ -1,24 +1,55 @@
-#include "emonesp.h"
-#include "emoncms.h"
-#include "config.h"
-#include "http.h"
-#include "input.h"
+#if defined(ENABLE_DEBUG) && !defined(ENABLE_DEBUG_EMONCMS)
+#undef ENABLE_DEBUG
+#endif
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
-//EMONCMS SERVER strings
+#include "emonesp.h"
+#include "emoncms.h"
+#include "app_config.h"
+#include "http.h"
+#include "input.h"
+#include "event.h"
 
 boolean emoncms_connected = false;
+boolean emoncms_updated = false;
 
 unsigned long packets_sent = 0;
 unsigned long packets_success = 0;
 
+const char *post_path = "/input/post?";
 
-void
-emoncms_publish(String url) {
+static void emoncms_result(bool success, String message)
+{
+  StaticJsonDocument<128> event;
+  
+  emoncms_connected = success;
+  event["emoncms_connected"] = (int)emoncms_connected;
+  event["emoncms_message"] = message.substring(0, 64);
+  event_send(event);
+}
+
+void emoncms_publish(JsonDocument &data)
+{
   Profile_Start(emoncms_publish);
 
-  if (emoncms_apikey != 0) {
+  if (config_emoncms_enabled() && emoncms_apikey != 0)
+  {
+    String url = emoncms_server + post_path;
+    String json;
+    serializeJson(data, json);
+    url += "fulljson=";
+//    MongooseString encodedJson = mg_url_encode(MongooseString(json));
+//    url += (const char *)encodedJson;
+    url += json;
+    url += "&node=";
+    url += emoncms_node;
+    url += "&apikey=";
+    url += emoncms_apikey;
+
+    DBUGVAR(url);
+
     DEBUG.println(emoncms_server.c_str() + String(url));
     packets_sent++;
     // Send data to Emoncms server
@@ -36,14 +67,27 @@ emoncms_publish(String url) {
       delay(10);
       result = get_http(emoncms_server.c_str(), url);
     }
-    if (result == "ok") {
+
+    const size_t capacity = JSON_OBJECT_SIZE(2) + result.length();
+    DynamicJsonDocument doc(capacity);
+    if(DeserializationError::Code::Ok == deserializeJson(doc, result.c_str(), result.length()))
+    {
+      DBUGLN("Got JSON");
+      bool success = doc["success"]; // true
+      if(success) {
+        packets_success++;
+      }
+      emoncms_result(success, doc["message"]);
+    } else if (result == "ok") {
       packets_success++;
-      emoncms_connected = true;
+      emoncms_result(true, result);
     } else {
-      emoncms_connected = false;
       DEBUG.print("Emoncms error: ");
       DEBUG.println(result);
+      emoncms_result(false, result);
     }
+  } else {
+    emoncms_result(false, String("Disabled"));
   }
 
   Profile_End(emoncms_publish, 10);
