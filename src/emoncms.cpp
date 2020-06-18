@@ -87,7 +87,9 @@ void emoncms_publish(JsonDocument &data)
       emoncms_result(false, result);
     }
   } else {
-    emoncms_result(false, String("Disabled"));
+    if(emoncms_connected) {
+      emoncms_result(false, String("Disabled"));
+    }
   }
 
   Profile_End(emoncms_publish, 10);
