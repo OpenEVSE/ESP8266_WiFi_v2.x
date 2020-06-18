@@ -122,9 +122,9 @@ bool isPositive(const String &str) {
 }
 
 bool isPositive(AsyncWebServerRequest *request, const char *param) {
-  char paramValue[8];
-  int paramFound = request->hasArg(param);
-  return paramFound >= 0 && (0 == paramFound || isPositive(String(paramValue)));
+  bool paramFound = request->hasArg(param);
+  String arg = request->arg(param);
+  return paramFound && (0 == arg.length() || isPositive(arg));
 }
 
 // -------------------------------------------------------------------
@@ -493,7 +493,7 @@ handleStatus(AsyncWebServerRequest *request) {
 // url: /config
 // -------------------------------------------------------------------
 void
-handleConfig(AsyncWebServerRequest *request) {
+handleConfigGet(AsyncWebServerRequest *request) {
   AsyncResponseStream *response;
   if(false == requestPreProcess(request, response)) {
     return;
@@ -521,6 +521,37 @@ handleConfig(AsyncWebServerRequest *request) {
 
   response->setCode(200);
   serializeJson(doc, *response);
+  request->send(response);
+}
+
+void
+handleConfigPost(AsyncWebServerRequest *request)
+{
+  AsyncResponseStream *response;
+  if(false == requestPreProcess(request, response)) {
+    return;
+  }
+
+  if(request->_tempObject)
+  {
+    String *body = (String *)request->_tempObject;
+
+    if(config_deserialize(*body)) {
+      config_commit();
+      response->setCode(200);
+      response->print("{\"msg\":\"done\"}");
+    } else {
+      response->setCode(400);
+      response->print("{\"msg\":\"Could not parse JSON\"}");
+    }
+
+    delete body;
+    request->_tempObject = NULL;
+  } else {
+    response->setCode(400);
+    response->print("{\"msg\":\"No Body\"}");
+  }
+
   request->send(response);
 }
 
@@ -854,6 +885,20 @@ void handleNotFound(AsyncWebServerRequest *request)
   }
 }
 
+void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+{
+  if(!index) {
+    DBUGF("BodyStart: %u", total);
+    request->_tempObject = new String();
+  }
+  String *body = (String *)request->_tempObject;
+  DBUGF("%.*s", len, (const char*)data);
+  body->concat((const char*)data, len);
+  if(index + len == total) {
+    DBUGF("BodyEnd: %u", total);
+  }
+}
+
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
   if(type == WS_EVT_CONNECT) {
     DBUGF("ws[%s][%u] connect", server->url(), client->id());
@@ -895,7 +940,8 @@ web_server_setup() {
 
   // Handle status updates
   server.on("/status", handleStatus);
-  server.on("/config", handleConfig);
+  server.on("/config", HTTP_GET, handleConfigGet);
+  server.on("/config", HTTP_POST, handleConfigPost, NULL, handleBody);
 #ifdef ENABLE_LEGACY_API
   server.on("/rapiupdate", handleUpdate);
 #endif
@@ -921,6 +967,8 @@ web_server_setup() {
   server.on("/update", HTTP_POST, handleUpdatePost, handleUpdateUpload);
 
   server.onNotFound(handleNotFound);
+  server.onRequestBody(handleBody);
+
   server.begin();
 
   DEBUG.println("Server started");
