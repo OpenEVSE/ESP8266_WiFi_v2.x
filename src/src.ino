@@ -51,6 +51,9 @@ unsigned long Timer3; // Timer for events once every 2 seconds
 
 boolean rapi_read = 0; //flag to indicate first read of RAPI status
 
+static uint32_t start_mem = 0;
+static uint32_t last_mem = 0;
+
 static void hardware_setup();
 
 // -------------------------------------------------------------------
@@ -86,6 +89,7 @@ void setup()
 
   input_setup();
 
+  start_mem = last_mem = ESPAL.getFreeHeap();
 } // end setup
 
 // -------------------------------------------------------------------
@@ -125,7 +129,12 @@ loop() {
       // Do these things once every 2s
       // -------------------------------------------------------------------
       if ((millis() - Timer3) >= 2000) {
-        DEBUG.printf("Free: %d\n", ESPAL.getFreeHeap());
+        uint32_t current = ESPAL.getFreeHeap();
+        int32_t diff = (int32_t)(last_mem - current);
+        if(diff != 0) {
+          DEBUG.printf("Free memory %u - diff %d %d\n", current, diff, start_mem - current);
+          last_mem = current;
+        }
         update_rapi_values();
         Timer3 = millis();
       }
