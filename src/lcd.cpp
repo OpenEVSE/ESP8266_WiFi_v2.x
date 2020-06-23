@@ -54,6 +54,7 @@ void lcd_display(Message *msg, int x, int y, int time, uint32_t flags)
 
   if(flags & LCD_DISPLAY_NOW) {
     lcd_loop();
+    rapiSender.flush();
   }
 }
 
