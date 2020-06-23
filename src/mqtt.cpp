@@ -57,7 +57,7 @@ void mqttmsg_callback(char *topic, byte * payload, unsigned int length) {
   }
   else if (topic_string == mqtt_vrms){
     voltage = payload_str.toFloat();
-    DBUGF("voltage:%d", voltage);
+    DBUGF("voltage: %.2f", voltage);
     OpenEVSE.setVoltage(voltage, [](int ret) {
       // Only gives better power calculations so not critical if this fails
     });
@@ -84,7 +84,7 @@ void mqttmsg_callback(char *topic, byte * payload, unsigned int length) {
       if (payload[0] != 0); {     // If MQTT msg contains a payload e.g $SC 13. Not all rapi commands have a payload e.g. $GC
         cmd += " ";
         // print RAPI value received via MQTT serial
-        for (int i = 0; i < length; i++) {
+        for (unsigned int i = 0; i < length; i++) {
           cmd += (char)payload[i];
         }
       }

@@ -47,6 +47,7 @@ const char _CONTENT_TYPE_SVG[] PROGMEM = "image/svg+xml";
 String currentfirmware = ESCAPEQUOTE(BUILD_TAG);
 
 void dumpRequest(AsyncWebServerRequest *request) {
+#ifdef ENABLE_DEBUG
   if(request->method() == HTTP_GET) {
     DBUGF("GET");
   } else if(request->method() == HTTP_POST) {
@@ -89,6 +90,7 @@ void dumpRequest(AsyncWebServerRequest *request) {
       DBUGF("_GET[%s]: %s", p->name().c_str(), p->value().c_str());
     }
   }
+#endif
 }
 
 // -------------------------------------------------------------------

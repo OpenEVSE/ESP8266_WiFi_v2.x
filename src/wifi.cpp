@@ -243,9 +243,9 @@ wifi_loop()
 {
   Profile_Start(wifi_loop);
 
-  bool isClient = wifi_mode_is_sta();
+//  bool isClient = wifi_mode_is_sta();
   bool isClientOnly = wifi_mode_is_sta_only();
-  bool isAp = wifi_mode_is_ap();
+//  bool isAp = wifi_mode_is_ap();
   bool isApOnly = wifi_mode_is_ap_only();
 
 #ifdef WIFI_LED
