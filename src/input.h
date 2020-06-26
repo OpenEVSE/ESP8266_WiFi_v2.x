@@ -2,6 +2,7 @@
 #define _EMONESP_INPUT_H
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include "RapiSender.h"
 
 extern RapiSender rapiSender;
@@ -9,11 +10,14 @@ extern RapiSender rapiSender;
 extern String url;
 extern String data;
 
-extern long amp;    // OpenEVSE Current Sensor
-extern long volt;   // Not currently in used
-extern long temp1;  // Sensor DS3232 Ambient
-extern long temp2;  // Sensor MCP9808 Ambient
-extern long temp3;  // Sensor TMP007 Infared
+extern double amp;    // OpenEVSE Current Sensor
+extern double voltage; // voltage from OpenEVSE or MQTT
+extern double temp1;  // Sensor DS3232 Ambient
+extern bool temp1_valid;
+extern double temp2;  // Sensor MCP9808 Ambient
+extern bool temp2_valid;
+extern double temp3;  // Sensor TMP007 Infared
+extern bool temp3_valid;
 extern long pilot;  // OpenEVSE Pilot Setting
 extern long state;    // OpenEVSE State
 extern long elapsed;  // Elapsed time (only valid if charging)
@@ -64,13 +68,10 @@ extern long watthour_total;
 
 extern String ohm_hour;
 
-extern unsigned long comm_sent;
-extern unsigned long comm_success;
-
 extern void handleRapiRead();
 extern void update_rapi_values();
-extern void create_rapi_json();
-extern void on_rapi_event();
+extern void create_rapi_json(JsonDocument &data);
 
+extern void input_setup();
 
 #endif // _EMONESP_INPUT_H

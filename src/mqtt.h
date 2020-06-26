@@ -6,6 +6,7 @@
 // -------------------------------------------------------------------
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
 extern void mqtt_msg_callback();
 
@@ -20,7 +21,7 @@ extern void mqtt_loop();
 //
 // data: a comma seperated list of name:value pairs to send
 // -------------------------------------------------------------------
-extern void mqtt_publish(String data);
+extern void mqtt_publish(JsonDocument &event);
 
 // -------------------------------------------------------------------
 // Restart the MQTT connection

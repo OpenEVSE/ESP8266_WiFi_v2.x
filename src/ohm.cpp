@@ -1,7 +1,7 @@
 #include "emonesp.h"
 #include "input.h"
 #include "wifi.h"
-#include "config.h"
+#include "app_config.h"
 #include "RapiSender.h"
 
 #include <WiFiClientSecure.h>
@@ -66,21 +66,29 @@ void ohm_loop()
           if(ohm_hour == "True")
           {
             DBUGLN(F("Ohm Hour"));
-            if (evse_sleep == 0) {
+            if (evse_sleep == 0)
+            {
               evse_sleep = 1;
-              if(0 == rapiSender.sendCmd(F("$FS"))) {
-                DBUGLN(F("Charging Started"));
-              }
+              rapiSender.sendCmd(F("$FS"), [](int ret)
+              {
+                if(RAPI_RESPONSE_OK == ret) {
+                  DBUGLN(F("Charge Stopped"));
+                }
+              });
             }
           }
           else
           {
             DBUGLN(F("It is not an Ohm Hour"));
-            if (evse_sleep == 1) {
+            if (evse_sleep == 1)
+            {
               evse_sleep = 0;
-              if(0 == rapiSender.sendCmd(F("$FE"))) {
-                DBUGLN(F("Charging Stopped"));
-              }
+              rapiSender.sendCmd(F("$FE"), [](int ret)
+              {
+                if(RAPI_RESPONSE_OK == ret) {
+                  DBUGLN(F("Charging enabled"));
+                }
+              });
             }
           }
         }
