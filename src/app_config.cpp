@@ -75,7 +75,7 @@ ConfigOpt *opts[] =
   new ConfigOptDefenition<String>(esp_hostname, esp_hostname_default, "hostname", "hn"),
 
 // EMONCMS SERVER strings
-  new ConfigOptDefenition<String>(emoncms_server, "https://data.openevse.com/emoncms", "emoncms_server", "es"),
+  new ConfigOptDefenition<String>(emoncms_server, "data.openevse.com/emoncms", "emoncms_server", "es"),
   new ConfigOptDefenition<String>(emoncms_node, esp_hostname, "emoncms_node", "en"),
   new ConfigOptSecret(emoncms_apikey, "", "emoncms_apikey", "ea"),
   new ConfigOptDefenition<String>(emoncms_fingerprint, "", "emoncms_fingerprint", "ef"),
