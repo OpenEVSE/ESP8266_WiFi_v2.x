@@ -55,7 +55,7 @@ double divert_attack_smoothing_factor;
 double divert_decay_smoothing_factor;
 uint32_t divert_min_charge_time;
 
-String esp_hostname_default = "openevse-"+ESPAL.getShortId();
+String esp_hostname_default = "openevse";
 
 void config_changed(String name);
 
