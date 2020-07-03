@@ -146,13 +146,13 @@ void config_changed(String name)
   DBUGF("%s changed", name.c_str());
 
   if(name == "flags") {
-    divertmode_update(config_divert_enabled() ? DIVERT_MODE_ECO : DIVERT_MODE_NORMAL);
+    divertmode_update((config_divert_enabled() && 1 == config_charge_mode()) ? DIVERT_MODE_ECO : DIVERT_MODE_NORMAL);
     if(mqtt_connected() != config_mqtt_enabled()) {
       mqtt_restart();
     }
     if(emoncms_connected != config_emoncms_enabled()) {
       emoncms_updated = true;
-    }
+    } 
   } else if(name.startsWith("mqtt_")) {
     mqtt_restart();
   } else if(name.startsWith("emoncms_")) {
