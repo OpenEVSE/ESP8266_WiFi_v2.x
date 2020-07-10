@@ -20,11 +20,6 @@
 
 #include "RapiSender.h"
 
-const char *e_url = "/input/post.json?node=";
-
-String url = "";
-String data = "";
-
 int espflash = 0;
 int espfree = 0;
 
@@ -92,9 +87,6 @@ unsigned long comm_success = 0;
 
 void create_rapi_json(JsonDocument &doc)
 {
-  url = e_url;
-  url += String(emoncms_node) + "&json={";
-
   doc["amp"] = amp * AMPS_SCALE_FACTOR;
   doc["voltage"] = voltage * VOLTS_SCALE_FACTOR;
   doc["pilot"] = pilot;

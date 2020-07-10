@@ -7,9 +7,6 @@
 
 extern RapiSender rapiSender;
 
-extern String url;
-extern String data;
-
 extern double amp;    // OpenEVSE Current Sensor
 extern double voltage; // voltage from OpenEVSE or MQTT
 extern double temp1;  // Sensor DS3232 Ambient

@@ -11,6 +11,7 @@
 #include "http.h"
 #include "input.h"
 #include "event.h"
+#include "urlencode.h"
 
 boolean emoncms_connected = false;
 boolean emoncms_updated = false;
@@ -36,13 +37,11 @@ void emoncms_publish(JsonDocument &data)
 
   if (config_emoncms_enabled() && emoncms_apikey != 0)
   {
-    String url = emoncms_server + post_path;
+    String url = post_path;
     String json;
     serializeJson(data, json);
     url += "fulljson=";
-//    MongooseString encodedJson = mg_url_encode(MongooseString(json));
-//    url += (const char *)encodedJson;
-    url += json;
+    url += urlencode(json);
     url += "&node=";
     url += emoncms_node;
     url += "&apikey=";
