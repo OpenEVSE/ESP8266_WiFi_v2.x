@@ -13,7 +13,7 @@ typedef struct Message_s Message;
 struct Message_s
 {
   Message *next;
-  char msg[LCD_MAX_LEN];
+  char msg[LCD_MAX_LEN + 1];
   int x;
   int y;
   int time;
@@ -54,6 +54,7 @@ void lcd_display(Message *msg, int x, int y, int time, uint32_t flags)
 
   if(flags & LCD_DISPLAY_NOW) {
     lcd_loop();
+    rapiSender.flush();
   }
 }
 

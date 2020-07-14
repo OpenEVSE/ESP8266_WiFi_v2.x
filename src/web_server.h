@@ -4,6 +4,7 @@
 #include <Hash.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
 
 // Content Types
 extern const char _CONTENT_TYPE_HTML[];
@@ -27,13 +28,16 @@ extern const char _CONTENT_TYPE_JPEG[];
 extern const char _CONTENT_TYPE_PNG[];
 #define CONTENT_TYPE_PNG FPSTR(_CONTENT_TYPE_PNG)
 
+extern const char _CONTENT_TYPE_SVG[];
+#define CONTENT_TYPE_SVG FPSTR(_CONTENT_TYPE_SVG)
+
 extern AsyncWebServer server;
 extern String currentfirmware;
 
 extern void web_server_setup();
 extern void web_server_loop();
 
-extern void web_server_event(String &event);
+extern void web_server_event(JsonDocument &event);
 
 void dumpRequest(AsyncWebServerRequest *request);
 
