@@ -1,6 +1,6 @@
 #include "emonesp.h"
 #include "wifi.h"
-#include "config.h"
+#include "app_config.h"
 #include "lcd.h"
 
 #include <ESP8266WiFi.h>              // Connect to Wifi
@@ -16,9 +16,6 @@ const char *softAP_password = "openevse";
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);
 int apClients = 0;
-
-// hostname for mDNS. Should work at least on windows. Try http://openevse or http://openevse.local
-const char *esp_hostname = "openevse";
 
 // Wifi Network Strings
 String connected_network = "";
@@ -236,7 +233,7 @@ wifi_setup() {
 
   wifi_start();
 
-  if (MDNS.begin(esp_hostname)) {
+  if (MDNS.begin(esp_hostname.c_str())) {
     MDNS.addService("http", "tcp", 80);
   }
 }
@@ -246,9 +243,9 @@ wifi_loop()
 {
   Profile_Start(wifi_loop);
 
-  bool isClient = wifi_mode_is_sta();
+//  bool isClient = wifi_mode_is_sta();
   bool isClientOnly = wifi_mode_is_sta_only();
-  bool isAp = wifi_mode_is_ap();
+//  bool isAp = wifi_mode_is_ap();
   bool isApOnly = wifi_mode_is_ap_only();
 
 #ifdef WIFI_LED

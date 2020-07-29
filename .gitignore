@@ -52,6 +52,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+.pio
 .pioenvs
 .piolibdeps
 .clang_complete
@@ -78,3 +79,6 @@ ubuntu-xenial-16.04-cloudimg-console.log
 .vscode/*.db
 .vscode/launch.json
 .vscode/.browse.c_cpp.db*
+lib/ConfigJson
+lib/ESPAL
+lib/OpenEVSE

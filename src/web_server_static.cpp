@@ -7,7 +7,7 @@
 #include "emonesp.h"
 #include "web_server.h"
 #include "web_server_static.h"
-#include "config.h"
+#include "app_config.h"
 #include "wifi.h"
 
 // Static files
@@ -76,7 +76,7 @@ void StaticFileWebHandler::handleRequest(AsyncWebServerRequest *request)
      _username != "" && _password != "" &&
      false == request->authenticate(_username.c_str(), _password.c_str()))
   {
-    request->requestAuthentication(esp_hostname);
+    request->requestAuthentication(esp_hostname.c_str());
     return;
   }
 

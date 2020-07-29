@@ -6,19 +6,17 @@
 #include <FS.h>
 
 #include "lcd.h"
+#include "app_config.h"
 
 static int lastPercent = -1;
 
 void ota_setup()
 {
   // Start local OTA update server
-  ArduinoOTA.setHostname(esp_hostname);
+  ArduinoOTA.setHostname(esp_hostname.c_str());
   ArduinoOTA.begin();
 
   ArduinoOTA.onStart([]() {
-    // Clean SPIFFS
-    SPIFFS.end();
-
     lcd_display(F("Updating WiFi"), 0, 0, 0, LCD_CLEAR_LINE);
     lcd_display(F(""), 0, 1, 10 * 1000, LCD_CLEAR_LINE);
     lcd_loop();
