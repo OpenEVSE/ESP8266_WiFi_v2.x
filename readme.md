@@ -295,11 +295,14 @@ Note: Holding the GPIO0 button for 5s will but the WiFi unit into AP (access poi
 ## Upload pre-compiled firmware 
 
 - Download pre-compiled FW from the [OpenEVSE Wifi releases](https://github.com/OpenEVSE/ESP8266_WiFi_v2.x/releases) page
-- Flash using esptool:
+
+- Either Flash using esptool:
 
 `esptool.py write_flash 0x000000 firmware.bin`
 
-Or use esptool GUI (Pyflasher) avilable on windows/mac https://github.com/marcelstoer/nodemcu-pyflasher
+- Or the OpenEnergyMonitor [emonUpload](https://github.com/openenergymonitor/emonupload) tool can be used to automatically download and flash the latest firmware. Be sure to select the correct version. 
+
+- Or use [Pyflasher](https://github.com/marcelstoer/nodemcu-pyflasher) GUI avilable on windows/mac 
 
 ## Firmware Compile & Upload
 
