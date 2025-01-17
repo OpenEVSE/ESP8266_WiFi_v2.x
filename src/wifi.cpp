@@ -233,6 +233,13 @@ wifi_setup() {
 
   wifi_start();
 
+  // pulled this status check from example: https://github.com/arduino/esp8266/blob/master/libraries/ESP8266mDNS/examples/mDNS_Web_Server/mDNS_Web_Server.ino
+  // without this we get no mDNS and error: "standard interfaces are not up, please specify one in ::begin()"
+  // mDNS restarts after onStationModeGotIP and onStationModeDisconnected WiFiEventHandlers, but I guess requires connected status before the .begin()
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
   if (MDNS.begin(esp_hostname.c_str())) {
     MDNS.addService("http", "tcp", 80);
   }

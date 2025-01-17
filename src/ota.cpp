@@ -14,6 +14,7 @@ void ota_setup()
 {
   // Start local OTA update server
   ArduinoOTA.setHostname(esp_hostname.c_str());
+  ArduinoOTA.setPassword("123");
   ArduinoOTA.begin();
 
   ArduinoOTA.onStart([]() {
