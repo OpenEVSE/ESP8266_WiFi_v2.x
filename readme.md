@@ -63,10 +63,10 @@ Live demo: https://openevse.openenergymonitor.org
     + [Hardware reset](#hardware-reset)
   * [Firmware Compile & Upload](#firmware-compile--upload)
     + [Using PlatformIO](#using-platformio)
-      - [a. Install PlatformIO command line](#a-install-platformio-command-line)
-      - [b. And / Or use PlatformIO IDE](#b-and--or-use-platformio-ide)
-      - [1. Clone this repo](#1-clone-this-repo)
-      - [2. Compile & upload](#2-compile--upload)
+      - [Install PlatformIO](#install-platformio)
+      - [Clone this repo](#clone-this-repo)
+      - [Build the GUI](#build-the-gui)
+      - [Compile & upload](#compile--upload)
     + [Using Arduino IDE](#using-arduino-ide)
       - [1. Install ESP for Arduino with Boards Manager](#1-install-esp-for-arduino-with-boards-manager)
       - [2. Compile and Upload](#2-compile-and-upload)
@@ -314,42 +314,25 @@ If required firmware can also be uploaded via serial using USB to UART cable.
 The code for the ESP8266 can be compiled and uploaded using PlatformIO or Arduino IDE. We recommend PlatformIO for its ease of use.
 
 
-### Compile & Upload Using PlatformIO
+### Using PlatformIO
 
 For more detailed ESP8266 Arduino core specific PlatfomIO notes see: https://github.com/esp8266/Arduino#using-platformio
 
-#### a. Install PlatformIO command line
+#### Install PlatformIO
 
 The easiest way if running Linux is to install using the install script. See [PlatformIO installation docs](http://docs.platformio.org/en/latest/installation.html#installer-script). Or PlatformIO IDE can be used :
 
 `$ sudo python -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)"`
 
-#### b. And / Or use PlatformIO IDE
-
 Standalone built on GitHub Atom IDE, or use PlatformIO Atom IDE plug-in if you already have Atom installed. The IDE is nice, easy and self-explanatory.
 
 [Download PlatfomIO IDE](http://platformio.org/platformio-ide)
 
-#### 1. Clone this repo
+#### Clone this repo
 
 `$ git clone https://github.com/OpenEVSE/ESP8266_WiFi_v2.x`
 
-
-#### 2. Compile & upload
-
-- Put ESP into bootloader mode
-- On other ESP boards (Adafruit HUZZAH) press and hold `boot` button then press `reset`, red LED should light dimly to indicate bootloader mode.
-- Compile and upload using platformIO
-
-```
-pio run -t upload
-```
-
-*To enable to OTA upload first upload via serial using the dev environment, this enables to OTA enable build flag. See `platformio.ino*
-
-*Note: uploading SPIFFS is no longer required since web resources are [now embedded in the firmware](https://github.com/OpenEVSE/ESP8266_WiFi_v2.x/pull/87)
-
-### Building the GUI
+#### Build the GUI
 
 The GUI files are minified and compiled into the firmware using a combination of Webpack and a custom build script. You will also need Node.JS and NPM installed.
 
@@ -368,13 +351,33 @@ cd gui
 npm run build
 ```
 
+Newer openssl provider in npm is compatible with some of the crypto settings, so run in "legacy" mode
+
+```shell
+NODE_OPTIONS=--openssl-legacy-provider npm run build
+```
+
 You can then just compile and upload as above.
 
 For more details see the [GUI documentation](gui/readme.md)
 
+#### Compile & upload
+
+- Put ESP into bootloader mode
+- On other ESP boards (Adafruit HUZZAH) press and hold `boot` button then press `reset`, red LED should light dimly to indicate bootloader mode.
+- Compile and upload using platformIO
+
+```
+pio run -t upload
+```
+
+*To enable to OTA upload first upload via serial using the dev environment, this enables to OTA enable build flag. See `platformio.ino*
+
+*Note: uploading SPIFFS is no longer required since web resources are [now embedded in the firmware](https://github.com/OpenEVSE/ESP8266_WiFi_v2.x/pull/87)
+
 ***
 
-### Compile & Upload Using Arduino IDE
+### Using Arduino IDE
 
 #### 1. Install ESP for Arduino with Boards Manager
 
