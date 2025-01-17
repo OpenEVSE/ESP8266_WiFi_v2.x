@@ -2,7 +2,7 @@
 #define app_config_mode_h
 
 #include <ConfigOpt.h>
-#include <ConfigOptDefenition.h>
+#include <ConfigOptDefinition.h>
 
 #include "mqtt.h"
 #include "app_config.h"
@@ -10,10 +10,10 @@
 class ConfigOptVirtualChargeMode : public ConfigOpt
 {
 protected:
-  ConfigOptDefenition<uint32_t> &_base;
+  ConfigOptDefinition<uint32_t> &_base;
 
 public:
-  ConfigOptVirtualChargeMode(ConfigOptDefenition<uint32_t> &b, const char *l, const char *s) :
+  ConfigOptVirtualChargeMode(ConfigOptDefinition<uint32_t> &b, const char *l, const char *s) :
     ConfigOpt(l, s),
     _base(b)
   {
