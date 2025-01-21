@@ -5,6 +5,7 @@
 #include <ESP8266HTTPClient.h>
 
 WiFiClientSecure client;        // Create class for HTTPS TCP connections get_https()
+WiFiClient client_insecure;
 HTTPClient http;                // Create class for HTTP TCP connections get_http()
 
 // -------------------------------------------------------------------
@@ -20,7 +21,7 @@ get_https(const char *fingerprint, const char *host, String url,
     DEBUG.print(host + httpsPort);      //debug
     return ("Connection error");
   }
-  if (client.verify(fingerprint, host)) {
+  //if (client.verify(fingerprint, host)) {
     client.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + host +
                  "\r\n" + "Connection: close\r\n\r\n");
     // Handle wait for reply and timeout
@@ -39,9 +40,9 @@ get_https(const char *fingerprint, const char *host, String url,
         return ("ok");
       }
     }
-  } else {
-    return ("HTTPS fingerprint no match");
-  }
+  //} else {
+  //  return ("HTTPS fingerprint no match");
+  //}
   return ("error " + String(host));
 }
 
@@ -51,7 +52,7 @@ get_https(const char *fingerprint, const char *host, String url,
 // -------------------------------------------------------------------
 String
 get_http(const char *host, String url) {
-  http.begin(String("http://") + host + String(url));
+  http.begin(client_insecure,String("http://") + host + String(url));
   int httpCode = http.GET();
   if ((httpCode > 0) && (httpCode == HTTP_CODE_OK)) {
     String payload = http.getString();

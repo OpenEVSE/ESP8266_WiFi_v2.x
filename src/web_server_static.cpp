@@ -119,6 +119,7 @@ size_t StaticFileResponse::write(AsyncWebServerRequest *request)
     // How should failures to send be handled?
     request->client()->send();
   }
+  return 0;
 }
 
 size_t StaticFileResponse::writeData(AsyncWebServerRequest *request)

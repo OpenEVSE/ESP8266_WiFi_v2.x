@@ -41,8 +41,8 @@ void ohm_loop()
       DBUGLN(F("ERROR Ohm Connect - connection failed"));
       return;
     }
-    if (client.verify(ohm_fingerprint, ohm_host))
-    {
+    //if (client.verify(ohm_fingerprint, ohm_host))
+    //{
       client.print(String("GET ") + ohm_url + ohm + " HTTP/1.1\r\n" +
                    "Host: " + ohm_host + "\r\n" +
                    "User-Agent: OpenEVSE\r\n" + "Connection: close\r\n\r\n");
@@ -93,9 +93,9 @@ void ohm_loop()
           }
         }
       }
-    } else {
-      DBUGLN(F("ERROR Ohm Connect - Certificate Invalid"));
-    }
+    //} else {
+    //  DBUGLN(F("ERROR Ohm Connect - Certificate Invalid"));
+    //}
   }
 
   Profile_End(ohm_loop, 5);
