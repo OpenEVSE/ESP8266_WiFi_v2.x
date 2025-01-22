@@ -70,8 +70,8 @@ void divertmode_update(byte newmode)
     {
       case DIVERT_MODE_NORMAL:
         // Restore the max charge current
-        rapiSender.sendCmdSync(String(F("$SC ")) + String(max_charge_current));
-        DBUGF("Restore max I: %d", max_charge_current);
+        //rapiSender.sendCmdSync(String(F("$SC ")) + String(max_charge_current));
+        //DBUGF("Restore max I: %d", max_charge_current);
         break;
 
       case DIVERT_MODE_ECO:
@@ -208,12 +208,12 @@ void divert_update_state()
         // Set charge rate via RAPI
         bool chargeRateSet = false;
         // Try and set current with new API with volatile flag (don't save the current rate to EEPROM)
-        if(0 == rapiSender.sendCmdSync(String(F("$SC ")) + String(charge_rate) + String(F(" V")))) {
-          chargeRateSet = true;
-        } else if(0 == rapiSender.sendCmdSync(String(F("$SC ")) + String(charge_rate))) {
-          // Fallback to old API
-          chargeRateSet = true;
-        }
+        //if(0 == rapiSender.sendCmdSync(String(F("$SC ")) + String(charge_rate) + String(F(" V")))) {
+        //  chargeRateSet = true;
+        //} else if(0 == rapiSender.sendCmdSync(String(F("$SC ")) + String(charge_rate))) {
+        //  // Fallback to old API
+        //  chargeRateSet = true;
+        //}
 
         if(true == chargeRateSet) 
         {
@@ -269,9 +269,9 @@ void divert_update_state()
             DBUGLN(F("Charge Stopped"));
             event["divert_active"] = divert_active = false;
 
-            if(0 == rapiSender.sendCmdSync(String(F("$SC ")) + String(max_charge_current))) {
-              DBUGF("Restore max I: %d", max_charge_current);
-            }
+            //if(0 == rapiSender.sendCmdSync(String(F("$SC ")) + String(max_charge_current))) {
+            //  DBUGF("Restore max I: %d", max_charge_current);
+            //}
           }
         }
       }

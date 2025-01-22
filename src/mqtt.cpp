@@ -81,7 +81,7 @@ void mqttmsg_callback(char *topic, byte * payload, unsigned int length) {
       // Print RAPI command from mqtt-sub topic e.g $SC
       // ASSUME RAPI COMMANDS ARE ALWAYS PREFIX BY $ AND TWO CHARACTERS LONG)
       String cmd = String(topic + rapi_character_index);
-      if (payload[0] != 0); {     // If MQTT msg contains a payload e.g $SC 13. Not all rapi commands have a payload e.g. $GC
+      if (payload[0] != 0) {     // If MQTT msg contains a payload e.g $SC 13. Not all rapi commands have a payload e.g. $GC
         cmd += " ";
         // print RAPI value received via MQTT serial
         for (unsigned int i = 0; i < length; i++) {

@@ -28,8 +28,9 @@ StaticFileWebHandler::StaticFileWebHandler()
 {
 }
 
-bool StaticFileWebHandler::_getFile(AsyncWebServerRequest *request, StaticFile **file)
+bool StaticFileWebHandler::_getFile(AsyncWebServerRequest *request, StaticFile **file) const
 {
+  DBUGF("[StaticFileWebHandler::_getFile] entry");
   // Remove the found uri
   String path = request->url();
   if(path == "/") {
@@ -53,11 +54,15 @@ bool StaticFileWebHandler::_getFile(AsyncWebServerRequest *request, StaticFile *
   return false;
 }
 
-bool StaticFileWebHandler::canHandle(AsyncWebServerRequest *request)
+bool StaticFileWebHandler::canHandle(AsyncWebServerRequest *request) const
 {
   StaticFile *file = NULL;
-  if (request->method() == HTTP_GET &&
-      _getFile(request, &file))
+  DBUGF("[StaticFileWebHandler::canHandle] entry");
+  if (request->isHTTP() &&
+      request->method() == HTTP_GET &&
+      //request->url().startsWith(_uri) &&
+      _getFile(request, &file)
+     )
   {
     request->_tempObject = file;
     DBUGF("[StaticFileWebHandler::canHandle] TRUE");
@@ -73,8 +78,8 @@ void StaticFileWebHandler::handleRequest(AsyncWebServerRequest *request)
 
   // Are we authenticated
   if(wifi_mode_is_sta() &&
-     _username != "" && _password != "" &&
-     false == request->authenticate(_username.c_str(), _password.c_str()))
+     www_username != "" && www_password != "" &&
+     false == request->authenticate(www_username.c_str(), www_password.c_str()))
   {
     request->requestAuthentication(esp_hostname.c_str());
     return;
@@ -82,6 +87,7 @@ void StaticFileWebHandler::handleRequest(AsyncWebServerRequest *request)
 
   // Get the filename from request->_tempObject and free it
   StaticFile *file = (StaticFile *)request->_tempObject;
+  DBUGF("[StaticFileWebHandler::handleRequest] checking if file set");
   if (file)
   {
     request->_tempObject = NULL;
@@ -89,6 +95,7 @@ void StaticFileWebHandler::handleRequest(AsyncWebServerRequest *request)
     request->send(response);
   } else {
     request->send(404);
+    DBUGF("[StaticFileWebHandler::handleRequest] returning 404");
   }
 }
 
@@ -119,6 +126,7 @@ size_t StaticFileResponse::write(AsyncWebServerRequest *request)
     // How should failures to send be handled?
     request->client()->send();
   }
+  return 0;
 }
 
 size_t StaticFileResponse::writeData(AsyncWebServerRequest *request)

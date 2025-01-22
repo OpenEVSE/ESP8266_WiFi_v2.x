@@ -75,13 +75,13 @@ void dumpRequest(AsyncWebServerRequest *request) {
   int headers = request->headers();
   int i;
   for(i=0; i<headers; i++) {
-    AsyncWebHeader* h = request->getHeader(i);
+    const AsyncWebHeader* h = request->getHeader(i);
     DBUGF("_HEADER[%s]: %s", h->name().c_str(), h->value().c_str());
   }
 
   int params = request->params();
   for(i = 0; i < params; i++) {
-    AsyncWebParameter* p = request->getParam(i);
+    const AsyncWebParameter* p = request->getParam(i);
     if(p->isFile()){
       DBUGF("_FILE[%s]: %s, size: %u", p->name().c_str(), p->value().c_str(), p->size());
     } else if(p->isPost()){
@@ -292,7 +292,7 @@ handleSaveMqtt(AsyncWebServerRequest *request) {
   String pass = request->arg("pass");
 
   int port = 1883;
-  AsyncWebParameter *portParm = request->getParam("port");
+  const AsyncWebParameter *portParm = request->getParam("port");
   if(nullptr != portParm) {
     port = portParm->value().toInt();
   }
@@ -926,15 +926,11 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient *client, AwsEventTy
 
 void
 web_server_setup() {
-//  SPIFFS.begin(); // mount the fs
-
-  // Setup the static files
-//  server.serveStatic("/", SPIFFS, "/")
-//    .setDefaultFile("index.html");
-
   // Add the Web Socket server
   ws.onEvent(onWsEvent);
   server.addHandler(&ws);
+
+  // static file handler
   server.addHandler(&staticFile);
 
   // Start server & server root html /
