@@ -16,11 +16,11 @@ struct StaticFile
 class StaticFileWebHandler: public AsyncWebHandler
 {
   private:
-    bool _getFile(AsyncWebServerRequest *request, StaticFile **file = NULL);
+    bool _getFile(AsyncWebServerRequest *request, StaticFile **file = NULL) const;
   protected:
   public:
     StaticFileWebHandler();
-    virtual bool canHandle(AsyncWebServerRequest *request) final;
+    virtual bool canHandle(AsyncWebServerRequest *request) const final;
     virtual void handleRequest(AsyncWebServerRequest *request) final;
 };
 

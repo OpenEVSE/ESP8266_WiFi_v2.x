@@ -28,7 +28,7 @@ StaticFileWebHandler::StaticFileWebHandler()
 {
 }
 
-bool StaticFileWebHandler::_getFile(AsyncWebServerRequest *request, StaticFile **file)
+bool StaticFileWebHandler::_getFile(AsyncWebServerRequest *request, StaticFile **file) const
 {
   DBUGF("[StaticFileWebHandler::_getFile] entry");
   // Remove the found uri
@@ -54,12 +54,11 @@ bool StaticFileWebHandler::_getFile(AsyncWebServerRequest *request, StaticFile *
   return false;
 }
 
-bool StaticFileWebHandler::canHandle(AsyncWebServerRequest *request)
+bool StaticFileWebHandler::canHandle(AsyncWebServerRequest *request) const
 {
   StaticFile *file = NULL;
-  // NOTE: some updates needed for 3.3.18 per https://github.com/mathieucarbou/ESPAsyncWebServer/commit/724f6c304532b1941bfca4bd3a5bf4e5075584c2 change to WebHandlers.cpp
   DBUGF("[StaticFileWebHandler::canHandle] entry");
-  if (//request->isHTTP() &&
+  if (request->isHTTP() &&
       request->method() == HTTP_GET &&
       //request->url().startsWith(_uri) &&
       _getFile(request, &file)
