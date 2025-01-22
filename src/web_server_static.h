@@ -20,8 +20,8 @@ class StaticFileWebHandler: public AsyncWebHandler
   protected:
   public:
     StaticFileWebHandler();
-    virtual bool canHandle(AsyncWebServerRequest *request) const final;
-    virtual void handleRequest(AsyncWebServerRequest *request) final;
+    virtual bool canHandle(AsyncWebServerRequest *request) const override final;
+    virtual void handleRequest(AsyncWebServerRequest *request) override final;
 };
 
 class StaticFileResponse: public AsyncWebServerResponse
