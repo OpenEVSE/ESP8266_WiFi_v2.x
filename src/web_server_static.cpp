@@ -30,6 +30,7 @@ StaticFileWebHandler::StaticFileWebHandler()
 
 bool StaticFileWebHandler::_getFile(AsyncWebServerRequest *request, StaticFile **file)
 {
+  DBUGF("[StaticFileWebHandler::_getFile] entry");
   // Remove the found uri
   String path = request->url();
   if(path == "/") {
@@ -56,8 +57,13 @@ bool StaticFileWebHandler::_getFile(AsyncWebServerRequest *request, StaticFile *
 bool StaticFileWebHandler::canHandle(AsyncWebServerRequest *request)
 {
   StaticFile *file = NULL;
-  if (request->method() == HTTP_GET &&
-      _getFile(request, &file))
+  // NOTE: some updates needed for 3.3.18 per https://github.com/mathieucarbou/ESPAsyncWebServer/commit/724f6c304532b1941bfca4bd3a5bf4e5075584c2 change to WebHandlers.cpp
+  DBUGF("[StaticFileWebHandler::canHandle] entry");
+  if (//request->isHTTP() &&
+      request->method() == HTTP_GET &&
+      //request->url().startsWith(_uri) &&
+      _getFile(request, &file)
+     )
   {
     request->_tempObject = file;
     DBUGF("[StaticFileWebHandler::canHandle] TRUE");
@@ -82,6 +88,7 @@ void StaticFileWebHandler::handleRequest(AsyncWebServerRequest *request)
 
   // Get the filename from request->_tempObject and free it
   StaticFile *file = (StaticFile *)request->_tempObject;
+  DBUGF("[StaticFileWebHandler::handleRequest] checking if file set");
   if (file)
   {
     request->_tempObject = NULL;
@@ -89,6 +96,7 @@ void StaticFileWebHandler::handleRequest(AsyncWebServerRequest *request)
     request->send(response);
   } else {
     request->send(404);
+    DBUGF("[StaticFileWebHandler::handleRequest] returning 404");
   }
 }
 
