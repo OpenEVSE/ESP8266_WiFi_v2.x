@@ -82,3 +82,6 @@ ubuntu-xenial-16.04-cloudimg-console.log
 lib/ConfigJson
 lib/ESPAL
 lib/OpenEVSE
+
+# gui static files
+src/web_static/
